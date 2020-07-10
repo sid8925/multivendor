@@ -1,0 +1,394 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class User extends CI_Controller {
+	public function __construct(){
+		parent::__construct();
+		$this->load->model('Common_model','common_model');
+		$this->load->model('User_Model','user_model');
+		
+		}
+
+	
+	public function register(){
+		$data['page_title']= 'Register Now';
+		$this->load->template('user/register',$data);
+	}
+	public function register_user(){
+		$form_vali= array(
+			array(
+			'field'=>'fname',
+			'label'=>'First Name',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'lname',
+			'label'=>'Last Name',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'email',
+			'label'=>'Email Address',
+			'rules'=>'trim|required|valid_email|is_unique[users.email]'
+			),
+			array(
+			'field'=>'phone',
+			'label'=>'Phone Number',
+			'rules'=>'trim|required|numeric|is_unique[users.phone]'
+			),
+		
+			array(
+			'field'=>'address',
+			'label'=>'Address',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'state',
+			'label'=>'State',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'city',
+			'label'=>'Phone Number',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'area',
+			'label'=>'Area',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'password',
+			'label'=>'Password',
+			'rules'=>'trim|required'
+			),
+			array(
+				'field'=>'repass',
+				'label'=>'Confirm Password',
+				'rules'=>'trim|required|matches[password]'
+				)
+
+		  );
+		  $this->form_validation->set_rules($form_vali);
+		  if($this->form_validation->run()== FALSE){
+			  //Form Validation Failed
+			  setFlashdata('alert alert-danger',validation_errors(),'user/register');
+
+
+		  }
+		  else{
+			  $formdata= $this->input->post();
+			  $data= $this->input->post();
+
+			  unset($data['repass']);
+			  $data['type']='user';
+
+			  $this->common_model->insert_record('users',$data);
+
+			  setFlashdata('alert alert-success','Registration Successfull','user/register');
+
+		  }
+
+	}
+
+	public function user_register(){
+		$this->load->model('Admin_Model','admin_model');
+		$form_vali= array(
+			array(
+			'field'=>'fname',
+			'label'=>'First Name',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'lname',
+			'label'=>'Last Name',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'email',
+			'label'=>'Email Address',
+			'rules'=>'trim|required|valid_email|is_unique[users.email]'
+			),
+			array(
+			'field'=>'phone',
+			'label'=>'Phone Number',
+			'rules'=>'trim|required|numeric|is_unique[users.phone]'
+			),
+			array(
+			'field'=>'address',
+			'label'=>'Address',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'state',
+			'label'=>'State',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'city',
+			'label'=>'Phone Number',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'pincode',
+			'label'=>'PIN Code',
+			'rules'=>'trim|required|numeric'
+			),
+			array(
+			'field'=>'password',
+			'label'=>'Password',
+			'rules'=>'trim|required'
+			),
+			array(
+				'field'=>'repass',
+				'label'=>'Confirm Password',
+				'rules'=>'trim|required|matches[password]'
+				)
+		  );
+		  $this->form_validation->set_rules($form_vali);
+		  if($this->form_validation->run() == False){
+			setFlashdata('alert alert-danger',validation_errors(),'home/login#register');
+			
+		  }
+		  else{
+			$ref_code = $this->input->post('referral_code');
+			if($ref_code != ''){
+				if($this->user_model->check_referral_id($ref_code)){
+					//Referral Code is correct
+				$form_data =$this->input->post();
+				unset($form_data['repass']);
+				$mdata= [
+					'fullname'=>$form_data['fname'].' '.$form_data['lname'],
+					'type'=>'user'
+					   ];
+	
+					   $formdata= array_merge($mdata,$form_data);
+				if($dataid= $this->admin_model->insert_user($formdata)){
+					//Insert success
+					setFlashdata('alert alert-success','You have been successfully registered. Please login using below form','home/login');
+				}
+				else{
+					//unable to update to database
+					setFlashdata('alert alert-success','Unable to Create Your Account, Try Again','home/login');
+				}
+				}
+				else{
+					//Invalid Referral Code
+					setFlashdata('alert alert-success','Invalid Referral Code, Try Again','home/login');
+				}
+			}
+			else
+			if($ref_code == ''){
+				$form_data =$this->input->post();
+				unset($form_data['repass']);
+				$mdata= [
+					'fullname'=>$form_data['fname'].' '.$form_data['lname'],
+					'type'=>'user'
+					   ];
+	
+					   $formdata= array_merge($mdata,$form_data);
+				if($dataid= $this->admin_model->insert_user($formdata)){
+					//Insert success
+					setFlashdata('alert alert-success','You have been successfully registered. Please login using below form','home/login');
+				}
+				else{
+					//unable to update to database
+					setFlashdata('alert alert-success','Unable to Create Your Account, Try Again','home/login');
+				}
+				}
+				else{
+					//Invalid Referral Code
+					setFlashdata('alert alert-success','Invalid Referral Code, Try Again','home/login');
+				}
+			}
+		
+		}
+			
+	
+	
+	//Reseller Functions
+	public function reseller_register(){
+		include APPPATH . 'third_party/instamojo/src/Instamojo.php';
+		$this->load->model('Admin_Model','admin_model');
+		$form_vali= array(
+			array(
+			'field'=>'fname',
+			'label'=>'First Name',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'lname',
+			'label'=>'Last Name',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'email',
+			'label'=>'Email Address',
+			'rules'=>'trim|required|valid_email|is_unique[users.email]'
+			),
+			array(
+			'field'=>'phone',
+			'label'=>'Phone Number',
+			'rules'=>'trim|required|numeric|is_unique[users.phone]'
+			),
+			array(
+			'field'=>'address',
+			'label'=>'Address',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'state',
+			'label'=>'State',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'city',
+			'label'=>'Phone Number',
+			'rules'=>'trim|required'
+			),
+			array(
+			'field'=>'pincode',
+			'label'=>'PIN Code',
+			'rules'=>'trim|required|numeric'
+			),
+			array(
+			'field'=>'password',
+			'label'=>'Password',
+			'rules'=>'trim|required'
+			),
+			array(
+				'field'=>'repass',
+				'label'=>'Confirm Password',
+				'rules'=>'trim|required|matches[password]'
+				)
+		  );
+		  $this->form_validation->set_rules($form_vali);
+		  if($this->form_validation->run() == False){
+			setFlashdata('alert alert-danger',validation_errors(),'home/login#register');
+			
+		  }
+		  else{
+			$form_data =$this->input->post();
+			unset($form_data['repass']);
+			$mdata= [
+				'fullname'=>$form_data['fname'].' '.$form_data['lname'],
+				'type'=>'reseller'
+				   ];
+
+				   $formdata= array_merge($mdata,$form_data);
+			if($dataid= $this->admin_model->insert_user($formdata)){
+				$api = new Instamojo\Instamojo('test_d3474fa7819fbb94f6545e00bc7', 'test_9666a4b9e4fbd6a56a6a5497912');
+				try {
+					$amount=5900;
+					$response = $api->paymentRequestCreate(array(
+						"purpose" => "Reseller Membership",
+						"amount" => $amount,
+						"send_email" => true,
+						"send_sms"=> true,
+						'buyer_name' => $form_data['fname'].' '.$form_data['lname'],
+						"sms_status"=> "Pending",
+						"email" => $this->input->post('email'),
+						"phone"=>$this->input->post('phone'),
+						"redirect_url" => base_url('instamojo/payment_confirmation/reseller/'),
+						"allow_repeated_payments"=>false,
+						//"webhook" => base_url('instamojo/')
+						));
+						$payment_ses = array(
+							'userid'=> $dataid,
+							'pay_purpose'=>'Reseller Membership',
+							'pay_amount'=>$amount
+						
+						);
+						$this->session->set_userdata($payment_ses);
+			
+						$redirect_url = $response['longurl'];
+						redirect($redirect_url, 'refresh');
+					//print_r($response);
+					//$this->load->view('user/insta');
+				}
+				catch (Exception $e) {
+					print('Error: ' . $e->getMessage());
+					setFlashdata('alert alert-danger',$e->getMessage(),'user/new_reseller');
+				}
+				//Insert success
+				setFlashdata('alert alert-success','You have been successfully registered. Please login using below form','user/new_reseller');
+			}
+			else{
+				//unable to update to database
+				setFlashdata('alert alert-success','Unable to Create Your Account, Try Again','user/new_reseller');
+			}
+		  }
+	}
+	
+
+public function join_as_reseller(){
+	$data['page_title']='Join as Reseller';
+	$this->load->template('user/joinasreseller',$data);
+
+}
+public function new_reseller(){
+
+	$data['page_title']='Regsiter as Reseller';
+	$data['states'] = $this->common_model->select('all_states');
+	$this->load->template('user/reseller_register',$data);
+}
+
+
+//Join As Vendor Ends
+//MEMBERSHIP UPGRADE
+public function upgrade_membership(){
+	include APPPATH . 'third_party/instamojo/src/Instamojo.php';//Loading Instamojo 
+	if(!$this->session->userdata('uid')){
+		setFlashdata('alert alert-danger','Login To Upgrade Membership','home/login');
+	}
+
+	$data['page_title']='Upgrade Membership';
+	 if($this->input->post('plan')=='1'){
+		 $amount= 500;
+	 }
+	 else
+	 if($this->input->post('plan')=='2'){
+		$amount= 2000;
+	}
+	else
+	if($this->input->post('plan')=='3'){
+		$amount= 3000;
+	}
+
+	$api = new Instamojo\Instamojo('test_d3474fa7819fbb94f6545e00bc7', 'test_9666a4b9e4fbd6a56a6a5497912');
+	try {
+		$response = $api->paymentRequestCreate(array(
+			"purpose" => "User Membership",
+			"amount" => $amount,
+			"send_email" => true,
+			"send_sms"=> true,
+			'buyer_name' => $this->session->userdata('fullname'),
+			"sms_status"=> "Pending",
+			"email" => $this->session->userdata('email'),
+			"phone"=>$this->session->userdata('phone'),
+			"redirect_url" => base_url('instamojo/payment_confirmation/user/'),
+			"allow_repeated_payments"=>false,
+			//"webhook" => base_url('instamojo/')
+			));
+			$payment_ses = array(
+				'userid'=> $this->session->userdata('uid'),
+				'pay_purpose'=>'User Membership',
+				'pay_amount'=>$amount
+			
+			);
+			$this->session->set_userdata($payment_ses);
+
+			$redirect_url = $response['longurl'];
+			redirect($redirect_url, 'refresh');
+		//print_r($response);
+		//$this->load->view('user/insta');
+	}
+	catch (Exception $e) {
+		print('Error: ' . $e->getMessage());
+	}
+
+}
+
+//MEMBERSHIP UPGRADE
+
+}
