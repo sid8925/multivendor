@@ -273,7 +273,8 @@
                     <ul class="login-w hidden-md hidden-sm hidden-xs">
                         <li>My Account</li>
                         <li class="logout"><a href="login.html">Login</a> / <a href="register.html">Register</a></li>
-                            
+                        <p>Hello <?=$this->session->userdata('username')?> </p>
+                <a href="<?= base_url();?>loginc/logout">Logout</a>  
                     </ul>
                 </div>
                 
