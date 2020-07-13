@@ -3,22 +3,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Loginc extends CI_Controller {
 
-	/**
-	 * bde mehnat sai kiya hai bhai kuch gadbad mt krna ab
-     * 
-     * sbse phle login bale view ko load kiya $data['page_title']='Login Now'; aisa humesha daina kyoki sayad usko
-     * ak argument chaiye hota hai
-     * uske baad model load kraya
-     * uske baad insert mai data register hota hai index view baale login sai link hai
-     * """"""""""""""""Important think form validation mai phle argument mai name same aayega jaisa tumhare input field ka
-     * name hai
-     * 
-     * 
-	 */
+
 	public function index()
 	{
         $data['page_title']='Login Now';
-        $this->load->template('user/layouts/loginv',$data);
+        $this->load->template('webjol/user/layouts/loginv',$data);
      
 	
 		
@@ -28,7 +17,8 @@ class Loginc extends CI_Controller {
     function __construct()
     {
         parent::__construct();
-        $this->load->model('Loginm');// to load the model
+        
+        $this->load->model('webjol/Login_Model', 'Loginm');
     }
     
     
@@ -67,7 +57,7 @@ class Loginc extends CI_Controller {
             }
             else {
                 $error= validation_errors();
-           setFlashdata('alert alert-danger','Incorrect email or password','loginc');
+           setFlashdata('alert alert-danger','Incorrect Email / Mobile no or password','loginc');
                
             }
         }

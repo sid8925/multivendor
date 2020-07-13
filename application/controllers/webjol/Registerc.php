@@ -3,22 +3,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Registerc extends CI_Controller {
 
-	/**
-	 * bde mehnat sai kiya hai bhai kuch gadbad mt krna ab
-     * 
-     * sbse phle login bale view ko load kiya $data['page_title']='Login Now'; aisa humesha daina kyoki sayad usko
-     * ak argument chaiye hota hai
-     * uske baad model load kraya
-     * uske baad insert mai data register hota hai index view baale login sai link hai
-     * """"""""""""""""Important think form validation mai phle argument mai name same aayega jaisa tumhare input field ka
-     * name hai
-     * 
-     * 
-	 */
+	
 	public function index()
 	{
         $data['page_title']='Register Now';
-        $this->load->template('user/layouts/registerv',$data);
+        $this->load->template('webjol/user/layouts/registerv',$data);
      
 	
 		
@@ -28,7 +17,7 @@ class Registerc extends CI_Controller {
     function __construct()
     {
         parent::__construct();
-        $this->load->model('Loginm');// to load the model
+        $this->load->model('Login_Model', 'Loginm');// to load the model
     }
     
     
@@ -62,7 +51,7 @@ class Registerc extends CI_Controller {
         
         
         $result=$this->Loginm->add_record($values);
-        setFlashdata('alert alert-success','data successfully submitted','main/index');
+        setFlashdata('alert alert-success','data successfully submitted','loginc');
 	
     }
         

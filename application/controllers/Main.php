@@ -11,7 +11,7 @@ class Main extends CI_Controller {
 	public function index()
 	{
 		$data['page_title']='Home';
-		$this->load->template('user/layouts/home',$data);
+		$this->load->template('webjol/user/layouts/home',$data);
 	
 		
 		

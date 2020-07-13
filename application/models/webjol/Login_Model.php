@@ -1,13 +1,9 @@
 <?php
-	class Loginm extends CI_Model{
+	class Login_Model extends CI_Model{
 		
 		
 	
-		function __construct()
-		{
-			parent::__construct();
-			$this->load->database();//loading database
-		}
+		
 		function add_record($values)
 		{
 			$result=$this->db->insert('mss_site_user',$values);
