@@ -41,7 +41,7 @@ class Loginc extends CI_Controller {
             $email = $this->security->xss_clean($this->input->post('email'));
             $pass = $this->security->xss_clean($this->input->post('pass'));
             
-            $user = $this->Loginm->login($email, $pass);
+            $user = $this->Loginm->login('mss_site_user',$email, $pass);
             
             if($user){
                 $userdata = array(
@@ -71,6 +71,9 @@ class Loginc extends CI_Controller {
         $this->session->sess_destroy();
         redirect('loginc');
     }
+
+
+   
 }
 
   

@@ -17,7 +17,7 @@ class Registerc extends CI_Controller {
     function __construct()
     {
         parent::__construct();
-        $this->load->model('Login_Model', 'Loginm');// to load the model
+        $this->load->model('webjol/Login_Model', 'Loginm');// to load the model
     }
     
     
@@ -46,11 +46,11 @@ class Registerc extends CI_Controller {
         $values['email']=$_POST['email'];
         $values['mobile']=$_POST['mobile'];
         $values['pass']=$_POST['pass'];
-         
+        //$data = $this->db->get('mss_site_user'); 
        
         
         
-        $result=$this->Loginm->add_record($values);
+        $result=$this->Loginm->add_record('mss_site_user', $values);
         setFlashdata('alert alert-success','data successfully submitted','loginc');
 	
     }
